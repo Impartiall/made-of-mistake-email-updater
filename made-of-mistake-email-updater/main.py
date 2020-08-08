@@ -39,7 +39,7 @@ def main() -> None:
         ".config.toml",
     ))
 
-    previous_comic_name_file_path = PurePath(
+    previous_comic_name_file_path = Path(
         Path(__file__).parent.absolute(),
         ".previous_comic_name.txt",
     )
@@ -68,7 +68,10 @@ def get_previous_comic_name(previous_comic_name_file_path: PurePath) -> str:
     Returns:
       The latest known comic name.
     """
-    with open(previous_comic_name_file_path, "r+") as f:
+    if not previous_comic_name_file_path.exists():
+        previous_comic_name_file_path.open("x")
+
+    with previous_comic_name_file_path.open() as f:
         return f.readline().strip("\n")
 
 
@@ -80,7 +83,7 @@ def set_previous_comic_name(name: str, previous_comic_name_file_path: PurePath) 
       name: The new name to store in the previous_comic_name_file.
       previous_comic_name_file_path: File path to the file that stores the previous comic name.
     """
-    with open(previous_comic_name_file_path, "w") as f:
+    with previous_comic_name_file_path.open("w") as f:
         f.write(name)
 
 
