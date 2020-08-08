@@ -68,7 +68,7 @@ def get_previous_comic_name(previous_comic_name_file_path: PurePath) -> str:
     Returns:
       The latest known comic name.
     """
-    with open(previous_comic_name_file_path, "r") as f:
+    with open(previous_comic_name_file_path, "r+") as f:
         return f.readline().strip("\n")
 
 
