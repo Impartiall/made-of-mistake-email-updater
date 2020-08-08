@@ -1,3 +1,7 @@
+# Script-specific
+.config.toml
+.previous_comic_name.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -127,5 +131,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-.config.toml
