@@ -19,7 +19,7 @@ If you would like to manage dependencies with an virtual environment, note that 
 
 Run the following command to install all dependencies with [pip](https://pypi.org/project/pip/):
 ```
-pip install requests lxml toml
+pip install feedparser toml
 ```
 
 ## Create a gmail account
