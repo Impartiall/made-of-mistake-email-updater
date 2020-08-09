@@ -1,4 +1,5 @@
-#!../venv/bin/python3
+#!/usr/bin/env bash
+"exec" "`dirname $0`/../venv/bin/python3" "$0"
 
 # made-of-mistake-email-updater - It does exactly what it says on the tin.
 # Copyright (C) 2020  Jesse Looney
