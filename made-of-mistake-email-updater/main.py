@@ -58,7 +58,7 @@ def main() -> None:
         print("No new comic found")
 
 
-def get_previous_comic_name(previous_comic_name_file_path: PurePath) -> str:
+def get_previous_comic_name(previous_comic_name_file_path: Path) -> str:
     """
     Read the latest known comic name from a file.
 
@@ -75,7 +75,7 @@ def get_previous_comic_name(previous_comic_name_file_path: PurePath) -> str:
         return f.readline().strip("\n")
 
 
-def set_previous_comic_name(name: str, previous_comic_name_file_path: PurePath) -> None:
+def set_previous_comic_name(name: str, previous_comic_name_file_path: Path) -> None:
     """
     Write a comic name to a file.
 
@@ -93,6 +93,9 @@ def get_current_comic_name() -> str:
 
     Returns:
       The newest comic name.
+
+    Raises:
+      Exception: If the request does not get a 200 OK response.
     """
     url = "https://madeofmistake.com"
     response = requests.get(url)
