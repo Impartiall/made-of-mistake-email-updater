@@ -1,6 +1,6 @@
 # Script-specific
 .config.toml
-.previous_comic_name.txt
+.previous_comic_title.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

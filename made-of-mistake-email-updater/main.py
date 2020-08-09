@@ -16,9 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import requests
-from lxml import html
-
+import feedparser
 import toml
 
 from email.mime.text import MIMEText
@@ -39,92 +37,87 @@ def main() -> None:
         ".config.toml",
     ))
 
-    previous_comic_name_file_path = Path(
+    previous_comic_title_file_path = Path(
         Path(__file__).parent.absolute(),
-        ".previous_comic_name.txt",
+        ".previous_comic_title.txt",
     )
 
-    previous_comic_name: str = get_previous_comic_name(previous_comic_name_file_path)
-    current_comic_name: str = get_current_comic_name()
+    previous_comic_title: str = get_previous_comic_title(previous_comic_title_file_path)
+    newest_comic: dict = get_newest_comic()
 
-    if previous_comic_name != current_comic_name:
-        set_previous_comic_name(
-            current_comic_name,
-            previous_comic_name_file_path,
+    if previous_comic_title != newest_comic["title"]:
+        set_previous_comic_title(
+            newest_comic["title"],
+            previous_comic_title_file_path,
         )
 
-        send_emails(config["sender_login"], config["receivers"], current_comic_name)
+        send_emails(config["sender_login"], config["receivers"], newest_comic)
     else:
         print("No new comic found")
 
 
-def get_previous_comic_name(previous_comic_name_file_path: Path) -> str:
+def get_previous_comic_title(previous_comic_title_file_path: Path) -> str:
     """
-    Read the latest known comic name from a file.
+    Read the latest known comic title from a file.
 
     Args:
-      previous_comic_name_file_path: File path to the file that stores the previous comic name.
+      previous_comic_title_file_path: File path to the file that stores the previous comic title.
     
     Returns:
-      The latest known comic name.
+      The latest known comic title.
     """
-    if not previous_comic_name_file_path.exists():
-        previous_comic_name_file_path.open("x")
+    if not previous_comic_title_file_path.exists():
+        previous_comic_title_file_path.open("x")
 
-    with previous_comic_name_file_path.open() as f:
+    with previous_comic_title_file_path.open() as f:
         return f.readline().strip("\n")
 
 
-def set_previous_comic_name(name: str, previous_comic_name_file_path: Path) -> None:
+def set_previous_comic_title(title: str, previous_comic_title_file_path: Path) -> None:
     """
-    Write a comic name to a file.
+    Write a comic title to a file.
 
     Args:
-      name: The new name to store in the previous_comic_name_file.
-      previous_comic_name_file_path: File path to the file that stores the previous comic name.
+      title: The new title to store in the previous_comic_title_file.
+      previous_comic_title_file_path: File path to the file that stores the previous comic title.
     """
-    with previous_comic_name_file_path.open("w") as f:
-        f.write(name)
+    with previous_comic_title_file_path.open("w") as f:
+        f.write(title)
 
 
-def get_current_comic_name() -> str:
+def get_newest_comic() -> dict:
     """
-    Get the newest Made of Mistake comic title from the webpage.
+    Get the newest Made of Mistake comic title from the RSS feed.
 
     Returns:
-      The newest comic name.
-
-    Raises:
-      Exception: If the request does not get a 200 OK response.
+      A dictonary containing data on the newest comic.
     """
-    url = "https://madeofmistake.com"
-    response = requests.get(url)
-
-    if not response.status_code == 200:
-        raise Exception(f"An error occurred while making a request to '{url}': {response.status_code}")
-    else:
-        page = html.fromstring(response.content)
-        return page.xpath("/html/head/title/text()")[0]
+    url = "https://madeofmistake.com/rss"
+    feed = feedparser.parse(url)
+    return {
+        "title": feed.entries[0].title,
+        "link": feed.entries[0].link,
+    }
 
 
-def send_emails(sender_login: dict, receivers: list, comic_title: str) -> None:
+def send_emails(sender_login: dict, receivers: list, comic: dict) -> None:
     """
     Send an email message to each configured receiver.
     
     Args:
       sender_login: Dictionary containing the email and password of the sender.
       receiver: List of email addresses of receivers.
-      comic_title: Title of the comic the email message is about.
+      comic: Dictionary containing data about this message's comic.
     """
     print(f"Sending emails as: '{sender_login['email']}'")
 
-    subject = f"{comic_title} - A new Made of Mistake comic"
+    subject = f"{comic['title']} - A new Made of Mistake comic"
     message_text = (
-        f"Made of Mistake just released a new comic: {comic_title}\n\n"
-        "View it at www.madeofmistake.com"
+        f"Made of Mistake just released a new comic: {comic['title']}\n\n"
+        "View it at {comic['link']}"
     )
     message_html = (
-        f"Made of Mistake just released a new comic: <a href='https://madeofmistake.com'>{comic_title}</a>"        
+        f"Made of Mistake just released a new comic: <a href='{comic['link']}'>{comic['title']}</a>"        
     )
 
     messages = [
