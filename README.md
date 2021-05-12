@@ -1,5 +1,5 @@
 # made-of-mistake-email-updater
-A Python script for sending email updates when a new [Made of Mistake](https://madeofmistake.com) comic has been posted, written in the FP style.
+A Python script for sending email updates when a new [Made of Mistake](https://madeofmistake.com) comic has been posted.
 
 # Installation
 Follow these steps if you would like to use this program for yourself.
